@@ -9,6 +9,7 @@ function ProductList({ onHomeClick }) {
     const [showPlants, setShowPlants] = useState(false);
     const [addedToCart, setAddedToCart] = useState({});
     const dispatch = useDispatch();
+    const cartItems = useSelector(state => state.cart.items);
 
     const plantsArray = [
         {
@@ -217,6 +218,17 @@ function ProductList({ onHomeClick }) {
             ]
         }
     ];
+
+    const isItemInCart = (name) => {
+        return cartItems.some(item => item.name === name);
+    };
+
+    const handleAddToCart = (product) => {
+        if (!isItemInCart(product.name)) {
+            dispatch(addItem(product));
+        }
+    };
+
     const styleObj = {
         backgroundColor: '#4CAF50',
         color: '#fff!important',
@@ -261,11 +273,6 @@ function ProductList({ onHomeClick }) {
         setShowCart(false);
     };
 
-    const handleAddToCart = (plant) => {
-        dispatch(addItem(plant));
-        setAddedToCart((prev) => ({ ...prev, [plant.name]: true }));
-    };
-
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -307,12 +314,13 @@ function ProductList({ onHomeClick }) {
                                         <p>{plant.description}</p>
                                         <p><strong>{plant.cost}</strong></p>
                                         <button
-                                            onClick={() => handleAddToCart(plant)}
-                                            disabled={!!addedToCart[plant.name]}
-                                            className={addedToCart[plant.name] ? 'btn-added' : 'btn'}
+                                            onClick={() => handleAddToCart(product)}
+                                            disabled={isItemInCart(product.name)}
+                                            className={`add-button ${isItemInCart(product.name) ? 'disabled' : ''}`}
                                         >
-                                            {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                                            {isItemInCart(product.name) ? 'Added to Cart' : 'Add to Cart'}
                                         </button>
+
                                     </div>
                                 ))}
                             </div>
